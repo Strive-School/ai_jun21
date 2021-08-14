@@ -1,0 +1,1256 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "<div style=\"background:#222222; color:#ffffff; padding:20px\">\n",
+    "<h1 align=\"center\">Guided ML With The Iris Dataset</h1>\n",
+    "\n",
+    "<h2 align=\"center\" tyle=\"color:#01ff84\" >Learning type | Activity type | Objective |</h2>\n",
+    "<h2 align=\"center\">| Supervised | Multiclass classification | Identify a flower's class |</h2>\n",
+    "\n",
+    "\n",
+    "<div>"
+   ]
+  },
+  {
+   "source": [
+    "Contents:\n",
+    "\n",
+    "1. Loading the data\n",
+    "2. Setting up supervised learning problem (selecting features)\n",
+    "3. Creating a first model\n",
+    "    - Creating train and test datasets\n",
+    "    - Normalizing train and test\n",
+    "    - Fitting and predicting\n",
+    "4. Evaluate the frist model predictions\n",
+    "5. Crossvalidation of the model\n",
+    "6. Creating an end to end ML pipeline\n",
+    "    - Train/Test Split\n",
+    "    - Normalize\n",
+    "    - Crossvalidations\n",
+    "    - Model\n",
+    "    - fitting and predicting"
+   ],
+   "cell_type": "markdown",
+   "metadata": {}
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Instructions with NBGrader removed\n",
+    "\n",
+    "Complete the cells beginning with `# YOUR CODE HERE` and run the subsequent cells to check your code."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "\n",
+    "Contents:\n",
+    "1. Loading the data\n",
+    "2. Setting up supervised learning problem (selecting features)\n",
+    "3. Creating a first model\n",
+    "    - Creating train and test datasets\n",
+    "    - Normalizing train and test\n",
+    "    - Fitting and predicting\n",
+    "4. Evaluate the frist model predictions\n",
+    "5. Crossvalidation of the model\n",
+    "6. Creating an end to end ML pipeline\n",
+    "    - Train/Test Split\n",
+    "    - Normalize\n",
+    "    - Crossvalidations\n",
+    "    - Model\n",
+    "    - fitting and predicting"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## About the dataset\n",
+    "\n",
+    "[Iris](https://archive.ics.uci.edu/ml/datasets/iris) is a well-known multiclass dataset. It contains 3 classes of flowers with 50 examples each. There are a total of 4 features for each flower.\n",
+    "\n",
+    "![](./classic-datasets/images/Iris-versicolor-21_1.jpg)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Package setups\n",
+    "\n",
+    "1. Run the following two cells to initalize the required libraries. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'/usr/local/anaconda3/envs/condaenv/bin/python'"
+      ]
+     },
+     "execution_count": 1,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "#to debug package errors\n",
+    "import sys\n",
+    "sys.path\n",
+    "sys.executable"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Import needed packages\n",
+    "# You may add or remove packages should you need them\n",
+    "import numpy as np\n",
+    "import matplotlib\n",
+    "import matplotlib.pyplot as plt\n",
+    "import seaborn as sns\n",
+    "import pandas as pd\n",
+    "from sklearn import datasets\n",
+    "from sklearn import model_selection\n",
+    "from sklearn.preprocessing import StandardScaler\n",
+    "from sklearn import preprocessing\n",
+    "from sklearn.linear_model import LogisticRegression\n",
+    "from sklearn.model_selection import train_test_split, cross_validate\n",
+    "from sklearn.pipeline import make_pipeline\n",
+    "\n",
+    "# Display plots inline and change plot resolution to retina\n",
+    "%matplotlib inline\n",
+    "%config InlineBackend.figure_format = 'retina'\n",
+    "# Set Seaborn aesthetic parameters to defaults\n",
+    "sns.set()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Step 1: Loading the data\n",
+    "\n",
+    "1. Load the iris dataset using ```datasets.load_iris()```\n",
+    "2. Investigate the data structure with ```.keys()```\n",
+    "3. Construct a dataframe from the dataset\n",
+    "4. Create a 'target' and a 'class' column that contains the target names and values\n",
+    "5. Display a random sample of the dataframe "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "dict_keys(['data', 'target', 'frame', 'target_names', 'DESCR', 'feature_names', 'filename'])"
+      ]
+     },
+     "execution_count": 19,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "#Your code here.\n",
+    "\n",
+    "#load the dataset\n",
+    "dataset = datasets.load_iris()\n",
+    "#display the \n",
+    "dataset.keys()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 29,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>sepal length</th>\n",
+       "      <th>sepal width</th>\n",
+       "      <th>petal length</th>\n",
+       "      <th>petal width</th>\n",
+       "      <th>target</th>\n",
+       "      <th>class</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>77</th>\n",
+       "      <td>6.7</td>\n",
+       "      <td>3.0</td>\n",
+       "      <td>5.0</td>\n",
+       "      <td>1.7</td>\n",
+       "      <td>1</td>\n",
+       "      <td>versicolor</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>25</th>\n",
+       "      <td>5.0</td>\n",
+       "      <td>3.0</td>\n",
+       "      <td>1.6</td>\n",
+       "      <td>0.2</td>\n",
+       "      <td>0</td>\n",
+       "      <td>setosa</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>114</th>\n",
+       "      <td>5.8</td>\n",
+       "      <td>2.8</td>\n",
+       "      <td>5.1</td>\n",
+       "      <td>2.4</td>\n",
+       "      <td>2</td>\n",
+       "      <td>virginica</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>17</th>\n",
+       "      <td>5.1</td>\n",
+       "      <td>3.5</td>\n",
+       "      <td>1.4</td>\n",
+       "      <td>0.3</td>\n",
+       "      <td>0</td>\n",
+       "      <td>setosa</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>81</th>\n",
+       "      <td>5.5</td>\n",
+       "      <td>2.4</td>\n",
+       "      <td>3.7</td>\n",
+       "      <td>1.0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>versicolor</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>73</th>\n",
+       "      <td>6.1</td>\n",
+       "      <td>2.8</td>\n",
+       "      <td>4.7</td>\n",
+       "      <td>1.2</td>\n",
+       "      <td>1</td>\n",
+       "      <td>versicolor</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>128</th>\n",
+       "      <td>6.4</td>\n",
+       "      <td>2.8</td>\n",
+       "      <td>5.6</td>\n",
+       "      <td>2.1</td>\n",
+       "      <td>2</td>\n",
+       "      <td>virginica</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>94</th>\n",
+       "      <td>5.6</td>\n",
+       "      <td>2.7</td>\n",
+       "      <td>4.2</td>\n",
+       "      <td>1.3</td>\n",
+       "      <td>1</td>\n",
+       "      <td>versicolor</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>101</th>\n",
+       "      <td>5.8</td>\n",
+       "      <td>2.7</td>\n",
+       "      <td>5.1</td>\n",
+       "      <td>1.9</td>\n",
+       "      <td>2</td>\n",
+       "      <td>virginica</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>27</th>\n",
+       "      <td>5.2</td>\n",
+       "      <td>3.5</td>\n",
+       "      <td>1.5</td>\n",
+       "      <td>0.2</td>\n",
+       "      <td>0</td>\n",
+       "      <td>setosa</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "     sepal length  sepal width  petal length  petal width  target       class\n",
+       "77            6.7          3.0           5.0          1.7       1  versicolor\n",
+       "25            5.0          3.0           1.6          0.2       0      setosa\n",
+       "114           5.8          2.8           5.1          2.4       2   virginica\n",
+       "17            5.1          3.5           1.4          0.3       0      setosa\n",
+       "81            5.5          2.4           3.7          1.0       1  versicolor\n",
+       "73            6.1          2.8           4.7          1.2       1  versicolor\n",
+       "128           6.4          2.8           5.6          2.1       2   virginica\n",
+       "94            5.6          2.7           4.2          1.3       1  versicolor\n",
+       "101           5.8          2.7           5.1          1.9       2   virginica\n",
+       "27            5.2          3.5           1.5          0.2       0      setosa"
+      ]
+     },
+     "execution_count": 29,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# Put data in a pandas DataFrame\n",
+    "df_iris = pd.DataFrame(dataset.data, columns=dataset.feature_names)\n",
+    "# Add target and class to DataFrame\n",
+    "df_iris['target'] = dataset.target\n",
+    "df_iris['class'] = dataset.target_names[dataset.target]\n",
+    "#rename the columns - remove the (cm)\n",
+    "df_iris.columns = [col.replace('(cm)', '').strip() for col in df_iris.columns]\n",
+    "# Show 10 random samples\n",
+    "df_iris.sample(n=10)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 37,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>sepal length</th>\n",
+       "      <th>sepal width</th>\n",
+       "      <th>petal length</th>\n",
+       "      <th>petal width</th>\n",
+       "      <th>target</th>\n",
+       "      <th>class</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>5.1</td>\n",
+       "      <td>3.5</td>\n",
+       "      <td>1.4</td>\n",
+       "      <td>0.2</td>\n",
+       "      <td>0</td>\n",
+       "      <td>setosa</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>4.9</td>\n",
+       "      <td>3.0</td>\n",
+       "      <td>1.4</td>\n",
+       "      <td>0.2</td>\n",
+       "      <td>0</td>\n",
+       "      <td>setosa</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>4.7</td>\n",
+       "      <td>3.2</td>\n",
+       "      <td>1.3</td>\n",
+       "      <td>0.2</td>\n",
+       "      <td>0</td>\n",
+       "      <td>setosa</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>4.6</td>\n",
+       "      <td>3.1</td>\n",
+       "      <td>1.5</td>\n",
+       "      <td>0.2</td>\n",
+       "      <td>0</td>\n",
+       "      <td>setosa</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>5.0</td>\n",
+       "      <td>3.6</td>\n",
+       "      <td>1.4</td>\n",
+       "      <td>0.2</td>\n",
+       "      <td>0</td>\n",
+       "      <td>setosa</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>...</th>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>145</th>\n",
+       "      <td>6.7</td>\n",
+       "      <td>3.0</td>\n",
+       "      <td>5.2</td>\n",
+       "      <td>2.3</td>\n",
+       "      <td>2</td>\n",
+       "      <td>virginica</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>146</th>\n",
+       "      <td>6.3</td>\n",
+       "      <td>2.5</td>\n",
+       "      <td>5.0</td>\n",
+       "      <td>1.9</td>\n",
+       "      <td>2</td>\n",
+       "      <td>virginica</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>147</th>\n",
+       "      <td>6.5</td>\n",
+       "      <td>3.0</td>\n",
+       "      <td>5.2</td>\n",
+       "      <td>2.0</td>\n",
+       "      <td>2</td>\n",
+       "      <td>virginica</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>148</th>\n",
+       "      <td>6.2</td>\n",
+       "      <td>3.4</td>\n",
+       "      <td>5.4</td>\n",
+       "      <td>2.3</td>\n",
+       "      <td>2</td>\n",
+       "      <td>virginica</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>149</th>\n",
+       "      <td>5.9</td>\n",
+       "      <td>3.0</td>\n",
+       "      <td>5.1</td>\n",
+       "      <td>1.8</td>\n",
+       "      <td>2</td>\n",
+       "      <td>virginica</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>150 rows × 6 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "     sepal length  sepal width  petal length  petal width  target      class\n",
+       "0             5.1          3.5           1.4          0.2       0     setosa\n",
+       "1             4.9          3.0           1.4          0.2       0     setosa\n",
+       "2             4.7          3.2           1.3          0.2       0     setosa\n",
+       "3             4.6          3.1           1.5          0.2       0     setosa\n",
+       "4             5.0          3.6           1.4          0.2       0     setosa\n",
+       "..            ...          ...           ...          ...     ...        ...\n",
+       "145           6.7          3.0           5.2          2.3       2  virginica\n",
+       "146           6.3          2.5           5.0          1.9       2  virginica\n",
+       "147           6.5          3.0           5.2          2.0       2  virginica\n",
+       "148           6.2          3.4           5.4          2.3       2  virginica\n",
+       "149           5.9          3.0           5.1          1.8       2  virginica\n",
+       "\n",
+       "[150 rows x 6 columns]"
+      ]
+     },
+     "execution_count": 37,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Question\n",
+    "Find the X and y values we're looking for. Notice that y is categorical and thus, we could **one-hot encode it** if we are looking at **class** or we can just pick **target**. In order to one hot encode we have  to re-shape `y` it using the **.get_dummies** function. \n",
+    "\n",
+    "## For the purpose of this exercise, do not use hot encoding, go only for target but think about if you have to drop it somewhere or not..."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 52,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "dictionary = {\"hello\":[\"world\", \"strive\"]}"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 60,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,\n",
+       "       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,\n",
+       "       0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,\n",
+       "       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,\n",
+       "       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,\n",
+       "       2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,\n",
+       "       2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2])"
+      ]
+     },
+     "execution_count": 60,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "dataset.target"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 38,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>sepal length</th>\n",
+       "      <th>sepal width</th>\n",
+       "      <th>petal length</th>\n",
+       "      <th>petal width</th>\n",
+       "      <th>class</th>\n",
+       "      <th>target_0</th>\n",
+       "      <th>target_1</th>\n",
+       "      <th>target_2</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>5.1</td>\n",
+       "      <td>3.5</td>\n",
+       "      <td>1.4</td>\n",
+       "      <td>0.2</td>\n",
+       "      <td>setosa</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>4.9</td>\n",
+       "      <td>3.0</td>\n",
+       "      <td>1.4</td>\n",
+       "      <td>0.2</td>\n",
+       "      <td>setosa</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>4.7</td>\n",
+       "      <td>3.2</td>\n",
+       "      <td>1.3</td>\n",
+       "      <td>0.2</td>\n",
+       "      <td>setosa</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>4.6</td>\n",
+       "      <td>3.1</td>\n",
+       "      <td>1.5</td>\n",
+       "      <td>0.2</td>\n",
+       "      <td>setosa</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>5.0</td>\n",
+       "      <td>3.6</td>\n",
+       "      <td>1.4</td>\n",
+       "      <td>0.2</td>\n",
+       "      <td>setosa</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>...</th>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>145</th>\n",
+       "      <td>6.7</td>\n",
+       "      <td>3.0</td>\n",
+       "      <td>5.2</td>\n",
+       "      <td>2.3</td>\n",
+       "      <td>virginica</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>146</th>\n",
+       "      <td>6.3</td>\n",
+       "      <td>2.5</td>\n",
+       "      <td>5.0</td>\n",
+       "      <td>1.9</td>\n",
+       "      <td>virginica</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>147</th>\n",
+       "      <td>6.5</td>\n",
+       "      <td>3.0</td>\n",
+       "      <td>5.2</td>\n",
+       "      <td>2.0</td>\n",
+       "      <td>virginica</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>148</th>\n",
+       "      <td>6.2</td>\n",
+       "      <td>3.4</td>\n",
+       "      <td>5.4</td>\n",
+       "      <td>2.3</td>\n",
+       "      <td>virginica</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>149</th>\n",
+       "      <td>5.9</td>\n",
+       "      <td>3.0</td>\n",
+       "      <td>5.1</td>\n",
+       "      <td>1.8</td>\n",
+       "      <td>virginica</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>150 rows × 8 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "     sepal length  sepal width  petal length  petal width      class  \\\n",
+       "0             5.1          3.5           1.4          0.2     setosa   \n",
+       "1             4.9          3.0           1.4          0.2     setosa   \n",
+       "2             4.7          3.2           1.3          0.2     setosa   \n",
+       "3             4.6          3.1           1.5          0.2     setosa   \n",
+       "4             5.0          3.6           1.4          0.2     setosa   \n",
+       "..            ...          ...           ...          ...        ...   \n",
+       "145           6.7          3.0           5.2          2.3  virginica   \n",
+       "146           6.3          2.5           5.0          1.9  virginica   \n",
+       "147           6.5          3.0           5.2          2.0  virginica   \n",
+       "148           6.2          3.4           5.4          2.3  virginica   \n",
+       "149           5.9          3.0           5.1          1.8  virginica   \n",
+       "\n",
+       "     target_0  target_1  target_2  \n",
+       "0           1         0         0  \n",
+       "1           1         0         0  \n",
+       "2           1         0         0  \n",
+       "3           1         0         0  \n",
+       "4           1         0         0  \n",
+       "..        ...       ...       ...  \n",
+       "145         0         0         1  \n",
+       "146         0         0         1  \n",
+       "147         0         0         1  \n",
+       "148         0         0         1  \n",
+       "149         0         0         1  \n",
+       "\n",
+       "[150 rows x 8 columns]"
+      ]
+     },
+     "execution_count": 38,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "pd.get_dummies(df_iris, columns=[\"target\"])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# YOUR CODE HERE\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Step 2: Setting up supervised learning problem (selecting features)\n",
+    "\n",
+    "Feature selection is an essential step in improving a model's perfromance. In the first version of the model we will use the **'sepal length'** and **'sepal width'** as predicting features. Later we will see the effect of adding additional features.\n",
+    "\n",
+    "1. Assign the values of the 'target' to Y as a numpy array\n",
+    "2. Assign the remaining feature values to X as a numpy array\n",
+    "3. Check the shape of X and Y. Check the first few values.\n",
+    "    - Can we confirm our X and Y are created correctly?"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "(150,)\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "array([0, 0, 0, 0, 0])"
+      ]
+     },
+     "execution_count": 11,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "#your code here\n",
+    "Y = df_iris['target'].values\n",
+    "print(Y.shape)\n",
+    "Y[:5]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "(150, 2)\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "array([[5.1, 3.5],\n",
+       "       [4.9, 3. ],\n",
+       "       [4.7, 3.2],\n",
+       "       [4.6, 3.1],\n",
+       "       [5. , 3.6]])"
+      ]
+     },
+     "execution_count": 12,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "#your code here\n",
+    "X = df_iris[['sepal length', 'sepal width']].values\n",
+    "print(X.shape)\n",
+    "X[:5]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Step 3: Creating the first model\n",
+    "\n",
+    "In lecture we learned about creating a train and test datasets, normalizing, and fitting a model. In this step we will see how to build a simple version of this.\n",
+    "\n",
+    "We have to be careful when constructing our train and test datasets. First, when we create train and test datasets we have to be careful that we always have the same datapoints in each set. Otherwise our results won't be reproduceable or we might introduce a bias into our model.\n",
+    "\n",
+    "We also need to be attentive to when we normalize the data. What would be the effect of normalizing the data (i.e. with StandardScaler to a range between 0 - 1) before we create our train and test sets? Effectively we would use information in the test set to structure the values in the training set and vice versa. Therefore normalizing train and test independently is the preferred method.\n",
+    "\n",
+    "1. Create X_train, X_test, Y_train, Y_test using ```train_test_split()``` with an 80/20 train/test split. Look in the SKLearn documentation to understand how the function works.\n",
+    "    - Inspect the first few rows of X_train.\n",
+    "    - Run the cell a few times. Do the first few rows change?\n",
+    "    - What option can we use in ```train_test_split()``` to stop this from happening?\n",
+    "2. Normalize the train and test datasets with ```StandardScaler```\n",
+    "    - We can fit the transform with ```.fit()``` and ```.transform()``` to apply it. Look in the documentation for an esample of how to do this.\n",
+    "    - Does it make sense to normalize Y_train and Y_test?\n",
+    "3. Initalize a ```LogisticRegression()``` model and use the ```.fit()``` method to initalize the first model.\n",
+    "    - We will pass the X_train and Y_train variables to the ```.fit()``` method.\n",
+    "    - Once the model is fit, use the ```.predict()``` with the X_test and save the output as predictions."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([[6.4, 3.1],\n",
+       "       [5.4, 3. ],\n",
+       "       [5.2, 3.5],\n",
+       "       [6.1, 3. ],\n",
+       "       [6.4, 2.8]])"
+      ]
+     },
+     "execution_count": 13,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "#split train and test data 80/20\n",
+    "#your code here\n",
+    "X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size = 0.2, random_state = 0)\n",
+    "\n",
+    "X_train[:5]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([[ 0.61303014,  0.10850105],\n",
+       "       [-0.56776627, -0.12400121],\n",
+       "       [-0.80392556,  1.03851009],\n",
+       "       [ 0.25879121, -0.12400121],\n",
+       "       [ 0.61303014, -0.58900572]])"
+      ]
+     },
+     "execution_count": 14,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "#normalize the dataset\n",
+    "#your code here\n",
+    "\n",
+    "#create and fit the scaler object on the training data\n",
+    "scaler = StandardScaler().fit(X_train)\n",
+    "\n",
+    "#transform the train and test datasets\n",
+    "X_train = scaler.transform(X_train) \n",
+    "X_test = scaler.transform(X_test)\n",
+    "\n",
+    "X_train[:5]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([1, 1, 0, 2, 0, 2, 0, 2, 2, 1, 1, 2, 1, 2, 1, 0, 1, 1, 0, 0, 1, 1,\n",
+       "       0, 0, 2, 0, 0, 2, 1, 0])"
+      ]
+     },
+     "execution_count": 15,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "#initalize and fit with Logistic Regression\n",
+    "#your code here\n",
+    "\n",
+    "#initalize the logistic regressor\n",
+    "clf = LogisticRegression(solver='lbfgs', multi_class='multinomial').fit(X_train, Y_train)\n",
+    "#make predictions\n",
+    "predictions = clf.predict(X_test)\n",
+    "predictions\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Step 4: Evaluate the frist model's predictions\n",
+    "\n",
+    "We will learn more about how to evaluate the performance of a classifier in later lessons. For now we will use % accuracy as our metric. It is important to know that this metric only helps us understand the specific performance of our model and not, for example, where we can improve it, or where it already perfoms well.\n",
+    "\n",
+    "1. Use ```.score()``` to evaluate the performance of our first model."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "0.7333333333333333"
+      ]
+     },
+     "execution_count": 16,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "#evaluating the performace of our first model\n",
+    "#your code here\n",
+    "\n",
+    "clf.score(X_test, Y_test)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Step 5: Crossvalidation of the model\n",
+    "Our first model achived ~90% accruacy. This is quite good. How do we know it is reproducable? If we run the model again and our performance is 85% which is correct? And what about improving our model? Can you think of one thing we can do to potentially improve the model?\n",
+    "\n",
+    "#### Crossvalidation\n",
+    "Corssvalidation is when we create multiple X and Y datasets. On each dataset we train and fit the model. We then average the results and return a 'crossvalidated' accruacy.\n",
+    "\n",
+    "1. Initalize a new version of the model you trained above with the same paramters.\n",
+    "2. Use ```cross_validate()``` to run the model with 5 crossvalidation folds. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Crossvalidation fold: 0  Accruacy: 0.92\n",
+      "Crossvalidation fold: 1  Accruacy: 0.68\n",
+      "Crossvalidation fold: 2  Accruacy: 0.8333333333333334\n",
+      "Crossvalidation fold: 3  Accruacy: 0.7916666666666666\n",
+      "Crossvalidation fold: 4  Accruacy: 0.8181818181818182\n",
+      "Mean train cross validation score 0.8086363636363636\n"
+     ]
+    }
+   ],
+   "source": [
+    "#model with cross validation\n",
+    "#your code here\n",
+    "\n",
+    "clf_cv = LogisticRegression(solver='lbfgs', multi_class='multinomial').fit(X_train, Y_train)\n",
+    "\n",
+    "#cross validate the training set\n",
+    "cv = cross_validate(clf_cv, X_train, Y_train, cv=5)\n",
+    "\n",
+    "def print_scores(cv):\n",
+    "    #print out cross validation scores\n",
+    "    [print('Crossvalidation fold: {}  Accruacy: {}'.format(n, score)) for n, score in enumerate(cv['test_score'])]\n",
+    "    #print out the mean of the cross validation\n",
+    "    print('Mean train cross validation score {}'.format(cv['test_score'].mean()))\n",
+    "    \n",
+    "print_scores(cv)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Step 6: Creating an end to end ML pipeline\n",
+    "Congraulations you've trained, crossvalidated, predicted, and evaluated your frist classifier. Now that you understand the basic steps we will look at a way to combine all these steps together.\n",
+    "\n",
+    "Before we go further think about what you would have to do if you wanted to change the model. Intalize a new model, change the vairables, redo the cross validation...etc. Seems like a lot. And when we have to change lots of code it is easy to make mistakes. And what if you wanted to try many models and see which one performed best? Or try changing many different features? How could you do it without writing each one out as we have?\n",
+    "\n",
+    "The solution is to use SKLearn's pipeline class. A pipeline is an object that will execute the various steps in the machine learning process. We can choose what elements we want in the pipeline and those that we do not. Once setup, we can rapidly change models, or input data and have it return our results in an ordered way.\n",
+    "\n",
+    "\n",
+    "1. Initalize a scaler and a classifer object like we did previously.\n",
+    "2. Use the ```make_pipeline()``` function to construct a transofmraiton pipeline for the scaler and the classifier\n",
+    "3. Input the pipeline object to the cross_validator and evaluate with 5 folds.\n",
+    "4. Print out your results (hint: make a function for repetitve tasks like printing)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 25,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Crossvalidation fold: 0  Accruacy: 0.7333333333333333\n",
+      "Crossvalidation fold: 1  Accruacy: 0.8333333333333334\n",
+      "Crossvalidation fold: 2  Accruacy: 0.7666666666666667\n",
+      "Crossvalidation fold: 3  Accruacy: 0.8666666666666667\n",
+      "Crossvalidation fold: 4  Accruacy: 0.8666666666666667\n",
+      "Mean train cross validation score 0.8133333333333332\n"
+     ]
+    }
+   ],
+   "source": [
+    "#define the scaler\n",
+    "scaler = StandardScaler();\n",
+    "#define the classifier\n",
+    "classifier = LogisticRegression(solver='lbfgs', multi_class='multinomial');\n",
+    "#make the pipeline\n",
+    "pipe = make_pipeline(scaler, classifier);\n",
+    "#run the cross validation\n",
+    "scores = cross_validate(pipe, X, Y, cv=5);\n",
+    "#print results\n",
+    "print_scores(scores)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Challenge Exercise\n",
+    "\n",
+    "In this notebook we only used two features to predict the class of the flower. We also did not do any hypter parameter tuning. The challenge is to impove the prediction results. Some ideas we can try:\n",
+    "1. Add features to the input and run the cross validation pipeline\n",
+    "2. Investigate how to use ```GridSearchCV```, a powerful funtion that searches through hyperparmetrs and does cross validation.\n",
+    "    - Hint: Input the pipeline directly into GridSearchCV\n",
+    "3. Try a different models like RandomForest or SVM."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "#your challenge code here\n",
+    "from sklearn.model_selection import GridSearchCV\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 32,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "params = {'logisticregression__penalty' : ['l2', 'none'],\n",
+    "         'logisticregression__C' : [0.1, 1, 10]}"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 33,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "gscv = GridSearchCV(pipe, params, cv=5, verbose=0)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 39,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/Users/ns/anaconda3/envs/bk_py3/lib/python3.6/site-packages/sklearn/linear_model/logistic.py:1510: UserWarning: Setting penalty='none' will ignore the C and l1_ratio parameters\n",
+      "  \"Setting penalty='none' will ignore the C and l1_ratio \"\n",
+      "/Users/ns/anaconda3/envs/bk_py3/lib/python3.6/site-packages/sklearn/linear_model/logistic.py:1510: UserWarning: Setting penalty='none' will ignore the C and l1_ratio parameters\n",
+      "  \"Setting penalty='none' will ignore the C and l1_ratio \"\n",
+      "/Users/ns/anaconda3/envs/bk_py3/lib/python3.6/site-packages/sklearn/linear_model/logistic.py:1510: UserWarning: Setting penalty='none' will ignore the C and l1_ratio parameters\n",
+      "  \"Setting penalty='none' will ignore the C and l1_ratio \"\n",
+      "/Users/ns/anaconda3/envs/bk_py3/lib/python3.6/site-packages/sklearn/linear_model/logistic.py:1510: UserWarning: Setting penalty='none' will ignore the C and l1_ratio parameters\n",
+      "  \"Setting penalty='none' will ignore the C and l1_ratio \"\n",
+      "/Users/ns/anaconda3/envs/bk_py3/lib/python3.6/site-packages/sklearn/linear_model/logistic.py:1510: UserWarning: Setting penalty='none' will ignore the C and l1_ratio parameters\n",
+      "  \"Setting penalty='none' will ignore the C and l1_ratio \"\n",
+      "/Users/ns/anaconda3/envs/bk_py3/lib/python3.6/site-packages/sklearn/linear_model/logistic.py:1510: UserWarning: Setting penalty='none' will ignore the C and l1_ratio parameters\n",
+      "  \"Setting penalty='none' will ignore the C and l1_ratio \"\n",
+      "/Users/ns/anaconda3/envs/bk_py3/lib/python3.6/site-packages/sklearn/linear_model/logistic.py:1510: UserWarning: Setting penalty='none' will ignore the C and l1_ratio parameters\n",
+      "  \"Setting penalty='none' will ignore the C and l1_ratio \"\n",
+      "/Users/ns/anaconda3/envs/bk_py3/lib/python3.6/site-packages/sklearn/linear_model/logistic.py:1510: UserWarning: Setting penalty='none' will ignore the C and l1_ratio parameters\n",
+      "  \"Setting penalty='none' will ignore the C and l1_ratio \"\n",
+      "/Users/ns/anaconda3/envs/bk_py3/lib/python3.6/site-packages/sklearn/linear_model/logistic.py:1510: UserWarning: Setting penalty='none' will ignore the C and l1_ratio parameters\n",
+      "  \"Setting penalty='none' will ignore the C and l1_ratio \"\n",
+      "/Users/ns/anaconda3/envs/bk_py3/lib/python3.6/site-packages/sklearn/linear_model/logistic.py:1510: UserWarning: Setting penalty='none' will ignore the C and l1_ratio parameters\n",
+      "  \"Setting penalty='none' will ignore the C and l1_ratio \"\n",
+      "/Users/ns/anaconda3/envs/bk_py3/lib/python3.6/site-packages/sklearn/model_selection/_search.py:814: DeprecationWarning: The default of the `iid` parameter will change from True to False in version 0.22 and will be removed in 0.24. This will change numeric results when test-set sizes are unequal.\n",
+      "  DeprecationWarning)\n"
+     ]
+    }
+   ],
+   "source": [
+    "gscv.fit(X_train, Y_train)\n",
+    "results = gscv.cv_results_;"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 40,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{'mean_fit_time': array([0.00532427, 0.01363163, 0.0056736 , 0.0119647 , 0.00760627,\n",
+       "        0.01326752]),\n",
+       " 'std_fit_time': array([0.00062045, 0.00163466, 0.0002454 , 0.00166928, 0.00075183,\n",
+       "        0.0016193 ]),\n",
+       " 'mean_score_time': array([0.00051188, 0.00048175, 0.00039082, 0.00041046, 0.00047536,\n",
+       "        0.00046048]),\n",
+       " 'std_score_time': array([6.27857119e-05, 1.01849403e-04, 2.16651003e-05, 4.11136508e-05,\n",
+       "        8.21538532e-05, 4.45062035e-05]),\n",
+       " 'param_logisticregression__C': masked_array(data=[0.1, 0.1, 1, 1, 10, 10],\n",
+       "              mask=[False, False, False, False, False, False],\n",
+       "        fill_value='?',\n",
+       "             dtype=object),\n",
+       " 'param_logisticregression__penalty': masked_array(data=['l2', 'none', 'l2', 'none', 'l2', 'none'],\n",
+       "              mask=[False, False, False, False, False, False],\n",
+       "        fill_value='?',\n",
+       "             dtype=object),\n",
+       " 'params': [{'logisticregression__C': 0.1,\n",
+       "   'logisticregression__penalty': 'l2'},\n",
+       "  {'logisticregression__C': 0.1, 'logisticregression__penalty': 'none'},\n",
+       "  {'logisticregression__C': 1, 'logisticregression__penalty': 'l2'},\n",
+       "  {'logisticregression__C': 1, 'logisticregression__penalty': 'none'},\n",
+       "  {'logisticregression__C': 10, 'logisticregression__penalty': 'l2'},\n",
+       "  {'logisticregression__C': 10, 'logisticregression__penalty': 'none'}],\n",
+       " 'split0_test_score': array([0.84, 0.88, 0.92, 0.88, 0.88, 0.88]),\n",
+       " 'split1_test_score': array([0.68, 0.72, 0.68, 0.72, 0.72, 0.72]),\n",
+       " 'split2_test_score': array([0.875     , 0.79166667, 0.83333333, 0.79166667, 0.79166667,\n",
+       "        0.79166667]),\n",
+       " 'split3_test_score': array([0.875     , 0.79166667, 0.79166667, 0.79166667, 0.79166667,\n",
+       "        0.79166667]),\n",
+       " 'split4_test_score': array([0.81818182, 0.81818182, 0.81818182, 0.81818182, 0.81818182,\n",
+       "        0.81818182]),\n",
+       " 'mean_test_score': array([0.81666667, 0.8       , 0.80833333, 0.8       , 0.8       ,\n",
+       "        0.8       ]),\n",
+       " 'std_test_score': array([0.07325409, 0.05248857, 0.07891307, 0.05248857, 0.05248857,\n",
+       "        0.05248857]),\n",
+       " 'rank_test_score': array([1, 3, 2, 3, 3, 3], dtype=int32)}"
+      ]
+     },
+     "execution_count": 40,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "results"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.8.5"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
