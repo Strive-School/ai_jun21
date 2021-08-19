@@ -54,5 +54,4 @@ knn.add_reference(x_train, y_train)
 predictions = knn.predict(x_test)
 
 acc = knn.evaluate(y_test)
-
 print(acc)
