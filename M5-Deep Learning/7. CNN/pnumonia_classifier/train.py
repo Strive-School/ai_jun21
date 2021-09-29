@@ -73,6 +73,8 @@ def validate(x_test, y_test, model, criterion, device):
 
 def train(epochs, x_train , y_train, x_test, y_test, model, criterion, optim):
 
+    print("---TRAINING---")
+
     best_val = float('INF')
     model.train()
     train_losses = []
@@ -99,7 +101,7 @@ def train(epochs, x_train , y_train, x_test, y_test, model, criterion, optim):
             optim.step()
 
             loss_iter += loss.cpu().item()
-
+        scheduler.step()
         if epoch+1 % 2:
 
             val_loss, val_acc = validate(x_test, y_test, model, criterion, device)
@@ -151,6 +153,7 @@ model = CNN_CLF(args['dropout']).float()
 
 criterion = nn.CrossEntropyLoss()
 optim = Adam(model.parameters(), args['lr'] )
+scheduler = torch.optim.lr_scheduler.StepLR(optim, 1, gamma=0.50)
 
 #Device
 model = model.to(device)
