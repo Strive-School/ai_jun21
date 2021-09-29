@@ -42,11 +42,11 @@ def train(epochs, x_train , y_train, x_test, y_test, model, criterion, optim):
 
     for epoch in range( epochs ):
 
-        x_train , y_train = dh.batchify(x_train , y_train)
+        x_train_batches , y_train_batches  = dh.batchify(x_train , y_train)
 
         loss_iter = 0
 
-        for x , y in tqdm(zip(x_train, y_train)):
+        for x , y in tqdm(zip(x_train_batches , y_train_batches )):
             
             optim.zero_grad()
 
