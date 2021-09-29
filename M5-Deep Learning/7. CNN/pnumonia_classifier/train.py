@@ -2,6 +2,7 @@
 from matplotlib import pyplot as plt
 from torchsummary import summary
 from tqdm import tqdm
+import numpy as np
 import argparse
 
 #torch
@@ -19,6 +20,25 @@ parser.add_argument('--lr', metavar = 'l', type = float, required = True)
 parser.add_argument('--dropout', metavar = 'd', type = float, required = True)
 args = vars(parser.parse_args())
 
+
+def get_acc(pred, target):
+
+    correct = 0
+    for i in range(len(pred)):
+        if pred[i] == target[i]:
+            correct += 1
+    return correct/len(pred)
+
+
+def predict(outputs):
+
+    predictions = []
+    for out in outputs.shape[0]:
+        softmax = torch.exp(out).cpu()
+        prob = list(softmax.numpy())
+        predictions.append(np.argmax(prob, axis=1))
+    return np.array(predictions)
+
 def validate(x_test, y_test, model, criterion, device):
 
     with torch.no_grad():
@@ -27,6 +47,7 @@ def validate(x_test, y_test, model, criterion, device):
 
         val_loss = 0
 
+        acc_sum = 0
         for x , y in zip(x_test, y_test):
             
 
@@ -34,11 +55,16 @@ def validate(x_test, y_test, model, criterion, device):
 
             out = model(x)
 
+            predictions = predict(out)
+
+            acc = get_acc(predictions, y)
+            acc_sum += acc
+
             loss = criterion(out, y)
 
             val_loss+= loss.cpu().item()
 
-        return val_loss / x_test.shape[0]
+        return val_loss / x_test.shape[0], acc_sum/x_test.shape[0]
 
 
 
@@ -75,8 +101,8 @@ def train(epochs, x_train , y_train, x_test, y_test, model, criterion, optim):
 
         if epoch+1 % 2:
 
-            val_loss = validate(x_test, y_test, model, criterion, device)
-            print("Epoch: {} \t Train Loss: {} \t Validation Loss: {}". format(epoch, loss_iter/x_train.shape[0], val_loss))
+            val_loss, val_acc = validate(x_test, y_test, model, criterion, device)
+            print("Epoch: {} \t Train Loss: {} \t Validation Loss: {} \t Validation Acc: {}". format( epoch, loss_iter/x_train.shape[0], val_loss, val_acc) )
 
             if val_loss < best_val:
                 print("Saving Model")
