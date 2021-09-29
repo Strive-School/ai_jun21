@@ -109,12 +109,12 @@ def train(epochs, x_train , y_train, x_test, y_test, model, criterion, optim):
             print("Epoch: {} \t Train Loss: {} \t Validation Loss: {} \t Validation Acc: {}". format( epoch, loss_iter/x_train.shape[0], val_loss, val_acc) )
 
             if val_loss < best_val:
-                print("Saving Model")
+                print("Saving Validation Model")
                 best_val = val_loss
                 torch.save(model, "models/best_val_model.pth")
             
             if val_acc < best_acc:
-                print("Saving Model")
+                print("Saving Accuracy Model")
                 best_acc = val_acc
                 torch.save(model, "models/best_acc_model.pth")
                 
