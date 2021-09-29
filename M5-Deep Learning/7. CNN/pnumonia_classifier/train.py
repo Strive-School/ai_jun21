@@ -79,9 +79,10 @@ def train(epochs, x_train , y_train, x_test, y_test, model, criterion, optim):
     
 #Data
 x_train, y_train = dh.get_data("chest_xray/train")
-x_test, y_test = dh.get_data("chest_xray/val")
+print(x_train.shape)
 
-#Device
+x_test, y_test = dh.get_data("chest_xray/test")
+print(x_test.shape)#Device
 device = torch.device("cuda" if  torch.cuda.is_available() else "cpu" )
 
 #Placeholders
@@ -93,7 +94,7 @@ epochs = 5
 lr = 0.001
 
 #Models
-model = CNN_CLF()
+model = CNN_CLF().float()
 print( summary( model, (1,512,512) ) )
 
 criterion = nn.CrossEntropyLoss()

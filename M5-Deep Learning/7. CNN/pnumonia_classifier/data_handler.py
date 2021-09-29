@@ -15,17 +15,18 @@ def get_data(pth):
         for img_pth in os.listdir( os.path.join(pth, folder) ):
 
             img = Image.open( os.path.join(pth, folder,img_pth) ).convert("L").resize((512,512))
-            img = np.array(img).astype(np.float64)
+            img = np.array(img).astype(np.float32)
 
             img = torch.from_numpy(img).reshape(1,512,512)
+            #img = img.type(torch.DoubleTensor)
             x.append(img)
 
             y.append( 1 if folder == "NORMAL" else 0 )
 
     x = torch.stack(x)
 
-    y = np.array(y).astype(int)
-    y = torch.from_numpy(y)
+    y = np.array(y)
+    y = torch.from_numpy(y).long()
 
     y = y.unsqueeze(1)
 
@@ -49,6 +50,6 @@ def batchify(x, y, batch_size = 32):
     # put batches
 
     x = x.reshape(n_batches, batch_size, x.shape[1], x.shape[2], x.shape[2])
-    y = y.reshape(n_batches, batch_size, y.shape[1])
+    y = y.reshape(n_batches, batch_size)
 
     return x, y
