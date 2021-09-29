@@ -36,7 +36,7 @@ def predict(outputs):
     for out in outputs:
         softmax = torch.exp(out).cpu()
         prob = list(softmax.numpy())
-        predictions.append(np.argmax(prob, axis=1))
+        predictions.append(np.argmax(prob, axis=0))
     return np.array(predictions)
 
 def validate(x_test, y_test, model, criterion, device):
@@ -118,9 +118,16 @@ def train(epochs, x_train , y_train, x_test, y_test, model, criterion, optim):
 #Data
 x_train, y_train = dh.get_data("chest_xray/train")
 print(x_train.shape)
+torch.save(x_train, "data/x_train.data")
+torch.save(y_train, "data/y_train.data")
 
 x_test, y_test = dh.get_data("chest_xray/test")
-print(x_test.shape)#Device
+print(x_test.shape)
+
+torch.save(x_test, "data/x_test.data")
+torch.save(y_test, "data/y_test.data")
+
+#Device
 device = torch.device("cuda" if  torch.cuda.is_available() else "cpu" )
 
 #Placeholders
