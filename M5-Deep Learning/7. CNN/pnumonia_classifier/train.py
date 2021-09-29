@@ -1,11 +1,22 @@
-import torch
-from torch import nn
+#utils
+from matplotlib import pyplot as plt
+from torchsummary import summary
+from tqdm import tqdm
+import argparse
+
+#torch
 from torch.optim import Adam
+from torch import nn
+import torch
+#files
 import data_handler as dh
 from model import CNN_CLF
-from torchsummary import summary
-from matplotlib import pyplot as plt
-from tqdm import tqdm
+
+
+parser = argparse.ArgumentParser(description="PNEUMONIA CNN")
+parser.add_argument('--epochs', metavar = 'e', type = int, required = True)
+parser.add_argument('--lr', metavar = 'l', type = float, required = True)
+args = vars(parser.parse_args())
 
 def validate(x_test, y_test, model, criterion, device):
 
@@ -90,7 +101,7 @@ device = torch.device("cuda" if  torch.cuda.is_available() else "cpu" )
 
 
 #HyperParams
-epochs = 10
+epochs = args['epochs']
 lr = 0.001
 
 #Models
@@ -98,7 +109,7 @@ model = CNN_CLF().float()
 #print( summary( model, (1,512,512) ) )
 
 criterion = nn.CrossEntropyLoss()
-optim = Adam(model.parameters(), lr )
+optim = Adam(model.parameters(), args['lr'] )
 
 #Device
 model = model.to(device)
