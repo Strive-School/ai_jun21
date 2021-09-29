@@ -61,15 +61,15 @@ def train(epochs, x_train , y_train, x_test, y_test, model, criterion, optim):
 
             loss_iter += loss.cpu().item()
 
-            if epoch+1 % 2:
+        if epoch+1 % 2:
 
-                val_loss = validate(x_test, y_test, model, criterion, device)
-                print("Epoch: {} \t Train Loss: {} \t Validation Loss: {}". format(epoch, loss_iter/x_train.shape[0], val_loss))
+            val_loss = validate(x_test, y_test, model, criterion, device)
+            print("Epoch: {} \t Train Loss: {} \t Validation Loss: {}". format(epoch, loss_iter/x_train.shape[0], val_loss))
 
-                if val_loss < best_val:
-                    print("Saving Model")
-                    best_val = val_loss
-                    torch.save(model, "models/best_val_model.pth")
+            if val_loss < best_val:
+                print("Saving Model")
+                best_val = val_loss
+                torch.save(model, "models/best_val_model.pth")
                 
                 
 
@@ -95,7 +95,7 @@ lr = 0.001
 
 #Models
 model = CNN_CLF().float()
-print( summary( model, (1,512,512) ) )
+#print( summary( model, (1,512,512) ) )
 
 criterion = nn.CrossEntropyLoss()
 optim = Adam(model.parameters(), lr )
