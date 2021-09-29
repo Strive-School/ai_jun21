@@ -18,6 +18,7 @@ parser = argparse.ArgumentParser(description="PNEUMONIA CNN")
 parser.add_argument('--epochs', metavar = 'e', type = int, required = True)
 parser.add_argument('--lr', metavar = 'l', type = float, required = True)
 parser.add_argument('--dropout', metavar = 'd', type = float, required = True)
+parser.add_argument('--load', metavar = 'l', type = int, default= 1, required = False)
 args = vars(parser.parse_args())
 
 
@@ -116,17 +117,23 @@ def train(epochs, x_train , y_train, x_test, y_test, model, criterion, optim):
     plt.savefig("figures/Losses.png")
     
 #Data
-x_train, y_train = dh.get_data("chest_xray/train")
-print(x_train.shape)
-torch.save(x_train, "data/x_train.data")
-torch.save(y_train, "data/y_train.data")
 
-x_test, y_test = dh.get_data("chest_xray/test")
-print(x_test.shape)
+if args["load"] == 0:
+    x_train, y_train = dh.get_data("chest_xray/train")
+    print(x_train.shape)
+    torch.save(x_train, "data/x_train.data")
+    torch.save(y_train, "data/y_train.data")
 
-torch.save(x_test, "data/x_test.data")
-torch.save(y_test, "data/y_test.data")
+    x_test, y_test = dh.get_data("chest_xray/test")
+    print(x_test.shape)
 
+    torch.save(x_test, "data/x_test.data")
+    torch.save(y_test, "data/y_test.data")
+else:
+    x_train = torch.load("data/x_train.data")
+    y_train = torch.load("data/y_train.data")
+    x_test = torch.load("data/x_test .data")
+    y_test  = torch.load("data/y_test .data")
 #Device
 device = torch.device("cuda" if  torch.cuda.is_available() else "cpu" )
 
