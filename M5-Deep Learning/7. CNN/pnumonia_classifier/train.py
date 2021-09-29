@@ -132,8 +132,8 @@ if args["saved_data"] == 0:
 else:
     x_train = torch.load("data/x_train.data")
     y_train = torch.load("data/y_train.data")
-    x_test = torch.load("data/x_test .data")
-    y_test  = torch.load("data/y_test .data")
+    x_test = torch.load("data/x_test.data")
+    y_test  = torch.load("data/y_test.data")
 #Device
 device = torch.device("cuda" if  torch.cuda.is_available() else "cpu" )
 
