@@ -16,6 +16,7 @@ from model import CNN_CLF
 parser = argparse.ArgumentParser(description="PNEUMONIA CNN")
 parser.add_argument('--epochs', metavar = 'e', type = int, required = True)
 parser.add_argument('--lr', metavar = 'l', type = float, required = True)
+parser.add_argument('--dropout', metavar = 'd', type = float, required = True)
 args = vars(parser.parse_args())
 
 def validate(x_test, y_test, model, criterion, device):
@@ -105,7 +106,7 @@ epochs = args['epochs']
 lr = 0.001
 
 #Models
-model = CNN_CLF().float()
+model = CNN_CLF(args['dropout']).float()
 #print( summary( model, (1,512,512) ) )
 
 criterion = nn.CrossEntropyLoss()
