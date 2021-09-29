@@ -8,6 +8,7 @@ torch.manual_seed(0)
 
 def get_data(pth):
     
+    print("Building", pth.split("/")[1], "Dataset")
     x , y = [], []
 
     for folder in os.listdir(pth):
@@ -51,9 +52,3 @@ def batchify(x, y, batch_size = 32):
     y = y.reshape(n_batches, batch_size, y.shape[1])
 
     return x, y
-
-x, y = get_data("chest_xray/train")
-
-x, y = batchify(x, y)
-
-print(x.shape, y.shape)
