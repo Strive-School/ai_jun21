@@ -33,7 +33,7 @@ def get_acc(pred, target):
 def predict(outputs):
 
     predictions = []
-    for out in outputs.shape[0]:
+    for out in outputs:
         softmax = torch.exp(out).cpu()
         prob = list(softmax.numpy())
         predictions.append(np.argmax(prob, axis=1))
