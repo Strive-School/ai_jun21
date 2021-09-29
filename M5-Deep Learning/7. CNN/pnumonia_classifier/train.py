@@ -76,6 +76,7 @@ def train(epochs, x_train , y_train, x_test, y_test, model, criterion, optim):
     print("---TRAINING---")
 
     best_val = float('INF')
+    best_acc = float('INF')
     model.train()
     train_losses = []
     val_losses = []
@@ -111,7 +112,11 @@ def train(epochs, x_train , y_train, x_test, y_test, model, criterion, optim):
                 print("Saving Model")
                 best_val = val_loss
                 torch.save(model, "models/best_val_model.pth")
-                
+            
+            if val_acc < best_acc:
+                print("Saving Model")
+                best_acc = val_acc
+                torch.save(model, "models/best_acc_model.pth")
                 
 
     plt.plot(train_losses)
