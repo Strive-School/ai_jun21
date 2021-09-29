@@ -90,7 +90,7 @@ device = torch.device("cuda" if  torch.cuda.is_available() else "cpu" )
 
 
 #HyperParams
-epochs = 5
+epochs = 10
 lr = 0.001
 
 #Models
